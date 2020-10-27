@@ -16,18 +16,18 @@
 
 int main (void)
 {
-    static int frame_count = 0;
-    //  Socket to talk to clients
+    //  初始化ZMQ 建立服务端
     void *context = zmq_ctx_new ();
     void *responder = zmq_socket (context, ZMQ_REP);
     int rc = zmq_bind (responder, "tcp://*:5555");
     assert (rc == 0);
 
+    //从文件中读取数据，产生模拟视频流
     FILE *fp=NULL;
     unsigned char buffer[640*480*2];
-    //const char *filename = "ir_640_480.stream";
-    const char *filename = "ir_640_480.raw";
-
+    const char *filename = "ir_640_480.stream";
+    //const char *filename = "ir_640_480.raw";
+    static int frame_count = 0;
     fp=fopen(filename,"rb+");
     if(fp==NULL){
             printf("cannot open %s file\n",filename);
@@ -46,18 +46,19 @@ int main (void)
         }
         DEBUG ("frame_count: %d \n",frame_count);
 
+
+
+        //ZMQ 接受客户端请求后，发生帧数据
         char rec_buffer [10];
         zmq_recv (responder, rec_buffer, 10, 0);
-        DEBUG ("Received Hello\n");
-        zmq_send (responder, buffer, 640*480*2, 0);
-	DEBUG ("Send raw frame data \n");
-	zmq_recv (responder, rec_buffer, 10, 0);
-	DEBUG ("Received md5 requect\n");
-	char md5_str[MD5_STR_LEN + 1];
-	Compute_string_md5(buffer, 640*480*2, md5_str);
-	zmq_send (responder,(unsigned char*)md5_str,sizeof(md5_str),0);
-	DEBUG ("Send md5sun:%s\n",md5_str);
-            
+        DEBUG ("Received from client :%s \n",rec_buffer);;
+        ROB_STREAM_NTP rframe;
+        ROB_STREAM_NTP *pframe = &rframe;
+        Compute_string_md5(buffer, sizeof(buffer), pframe->md5_str);
+        memcpy(pframe->frame_data,buffer,sizeof(buffer));
+        zmq_send (responder, pframe, sizeof(rframe), 0);
+	DEBUG ("Send raw frame data \n");  
+
     }
     return 0;
 }

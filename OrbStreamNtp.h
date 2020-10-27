@@ -4,6 +4,8 @@ typedef struct
 {
 	//unsigned char *pframe;
 	unsigned char ntp_status;
+	unsigned char stream_type;
+	unsigned int timestamp;
 	unsigned char frame_data[640*480*2];
 	char md5_str[16*2+1];
 	
