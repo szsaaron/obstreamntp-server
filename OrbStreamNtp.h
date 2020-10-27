@@ -18,4 +18,8 @@ enum COMM_STATUS
 	COMM_RESET,
 } comm_status;
 
+
+void* orb_ntp_init(char*netinfo);
+void orb_ntp_worker(void* resp, unsigned char *pdata, unsigned int sizes);
+
 #endif
