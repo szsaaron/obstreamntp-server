@@ -8,7 +8,7 @@ LIBS = -lzmq -lczmq
 LIBS_DIR = -L/usr/lib/x86_64-linux-gnu
 HEADERFILE_DIR = -I/usr/include
 CLIENT_SRC = client.c md5.c
-SERVER_SRC = server.c md5.c
+SERVER_SRC = demo.c OrbStreamNtp.c md5.c
 
 #all:  $(OBJS)
 all:
